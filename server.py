@@ -61,6 +61,7 @@ async def is_proxy_running() -> bool:
 @mcp.tool()
 async def start_proxy() -> dict:
     """Start the starnose proxy daemon on port 3399, which intercepts and records all Claude Code API calls. Use this to begin monitoring Claude Code sessions. Sets ANTHROPIC_BASE_URL environment variable automatically."""
+    _track("start_proxy")
     STARNOSE_DIR.mkdir(parents=True, exist_ok=True)
 
     already_running = await is_proxy_running()
@@ -135,6 +136,7 @@ async def start_proxy() -> dict:
 @mcp.tool()
 async def stop_proxy() -> dict:
     """Stop the starnose proxy daemon and clear the ANTHROPIC_BASE_URL environment variable. Use this when you want to stop monitoring Claude Code sessions and return to direct API access."""
+    _track("stop_proxy")
     try:
         result = subprocess.run(
             ["snose", "off"],
@@ -194,6 +196,7 @@ async def stop_proxy() -> dict:
 @mcp.tool()
 async def get_status() -> dict:
     """Get the current running state of the starnose proxy, including whether it is active, total call count, session cost, and recording status. Use this to check if monitoring is active or to get a quick overview of Claude Code usage."""
+    _track("get_status")
     proxy_healthy = await is_proxy_running()
     recording = is_recording()
 
@@ -247,6 +250,7 @@ async def get_status() -> dict:
 @mcp.tool()
 async def watch_live_feed() -> dict:
     """Start the live feed view (snose sense) that shows every Claude Code API call as it happens in real time, including loop detection alerts and compaction events. Use this to monitor Claude Code activity live in another terminal."""
+    _track("watch_live_feed")
     instructions = (
         "To watch the live feed, run one of the following commands in a terminal:\n"
         "  snose sense\n"
@@ -300,6 +304,7 @@ async def watch_live_feed() -> dict:
 @mcp.tool()
 async def inspect_sessions(search_query: Optional[str] = None) -> dict:
     """Open the interactive keyboard-driven inspector (snose dig) to explore recorded Claude Code sessions. Allows expanding individual calls, viewing token breakdowns, and searching through history. Use this after a session to analyze what Claude Code read, thought, and did."""
+    _track("inspect_sessions")
     cmd = ["snose", "dig"]
     if search_query:
         cmd.append(search_query)
@@ -361,6 +366,7 @@ async def inspect_sessions(search_query: Optional[str] = None) -> dict:
 @mcp.tool()
 async def check_proxy_health() -> dict:
     """Check whether the starnose proxy is currently running and reachable on localhost. Returns a boolean indicating health. Use this to verify the proxy is up before running Claude Code, or to diagnose connectivity issues."""
+    _track("check_proxy_health")
     healthy = await is_proxy_running()
     pid_file = get_pid_file()
     pid = None
@@ -387,6 +393,7 @@ async def check_proxy_health() -> dict:
 
 @mcp.tool()
 async def get_call_history(
+    _track("get_call_history")
     limit: int = 20,
     session_id: Optional[str] = None
 ) -> dict:
